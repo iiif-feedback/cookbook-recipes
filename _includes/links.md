@@ -33,3 +33,33 @@
 [service-registry]: https://iiif.io/api/registry/services/ "the IIIF Registry of Services"
 [language-of-property-values]: https://iiif.io/api/presentation/3.0/#44-language-of-property-values "Language of Property Values"
 [bcp-47]: https://tools.ietf.org/html/bcp47 "BCP 47"
+
+{% include helpfulness.html %}
+
+<script src="https://unpkg.com/realm-web@0.8.0/dist/bundle.iife.js"></script>
+<script type="module">
+  import helpfulness from '/js.helpfulness.js'
+  
+  document.addEventListener('DOMContentLoaded', async () => {
+  helpfulness()
+  const app = new Realm.App({ id: "<Your App ID>" })
+})
+
+function sendFeedback() {
+    try {
+        const response = await fetch("https://v1.nocodeapi.com/iiiffeedback/google_sheets/bHBwoNLQJPypmDUn?tabId=Feedback", {
+            method: "post",
+	    body: JSON.stringify([["NoCodeAPI","hello@nocodeapi.com"],["Mohd Danish","mddanishyusuf@gmail.com"]]),
+            headers: {
+                "Content-Type": "application/json"
+            }
+        });
+        const json = await response.json();
+        console.log("Success:", JSON.stringify(json));
+    } catch (error) {
+        console.error("Error:", error);
+    }
+}
+
+callingFn();
+</script>

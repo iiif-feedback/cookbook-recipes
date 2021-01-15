@@ -1,6 +1,6 @@
 import { sendEvent } from './events'
 
-export default function helpfulness () {
+export default function helpfulness() {
   const form = document.querySelector('.js-helpfulness')
   const texts = Array.from(document.querySelectorAll('.js-helpfulness input, .js-helpfulness textarea'))
   const votes = Array.from(document.querySelectorAll('.js-helpfulness [type=radio]'))
@@ -16,8 +16,8 @@ export default function helpfulness () {
     voteEl.addEventListener('change', async evt => {
       const state = evt.target.value.toLowerCase()
       const form = voteEl.closest('form')
-      await submitForm(form)
-      updateDisplay(form, state)
+      submitForm(form)
+      form.classList.add('completed')
     })
   })
 
@@ -28,23 +28,23 @@ export default function helpfulness () {
     })
   })
 
-  function showElement (el) {
+  function showElement(el) {
     el.removeAttribute('hidden')
   }
 
-  function hideElement (el) {
+  function hideElement(el) {
     el.setAttribute('hidden', true)
   }
 
-  function isRequired (el) {
+  function isRequired(el) {
     el.setAttribute('required', true)
   }
 
-  function notRequired (el) {
+  function notRequired(el) {
     el.removeAttribute('required')
   }
 
-  function updateDisplay (form, state) {
+  function updateDisplay(form, state) {
     Array.from(
       form.querySelectorAll(
         ['start', 'yes', 'no', 'end']
@@ -62,27 +62,13 @@ export default function helpfulness () {
     }
   }
 
-  async function submitForm (form) {
+  function submitForm(form) {
     const formData = new FormData(form)
-    const data = Object.fromEntries(
-      Array.from(formData.entries())
-        .map(
-          ([key, value]) => [
-            key.replace('helpfulness-', ''),
-            value || undefined // Convert empty strings to undefined
-          ]
-        )
-    )
-    return trackEvent(data)
-  }
-
-  async function trackEvent ({ token, vote, email, comment }) {
-    return sendEvent({
-      type: 'survey',
-      token, // Honeypot
-      survey_vote: vote === 'Yes',
-      survey_comment: comment,
-      survey_email: email
-    })
+    const data = Object.fromEntries(Array.from(formData.entries()).map((key) => key.replace('helpfulness-', '')))
+    return fetch("https://v1.nocodeapi.com/iiiffeedback/google_sheets/bHBwoNLQJPypmDUn?tabId=Feedback", {
+      method: "post",
+      body: JSON.stringify(data),
+      headers: { "Content-Type": "application/json" }
+    });
   }
 }
